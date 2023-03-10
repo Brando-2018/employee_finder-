@@ -2,8 +2,7 @@ const inquirer = require('inquirer');
 require('console.table');
 const db = require('./db/connection');
 
-const inquirer = require("inquirer");
-const mysql = require("mysql");
+// const mysql = require("mysql");
 
 // Function to start the application and present options
 function start() {
@@ -110,19 +109,6 @@ function addDepartment() {
     });
 }
 
-const mysql = require('mysql2/promise');
-
-// create a connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'your_username',
-  password: 'your_password',
-  database: 'employee_tracker',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
 // function to add a role to the database
 async function addRole() {
   const name = prompt('Enter the name of the new role:');
@@ -167,4 +153,4 @@ async function updateEmployeeRole() {
   console.log(`Employee ${employee} updated with new role ID ${new_role_id}.`);
 }
 
-
+start()
