@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 require('console.table');
-const db = require('./db/connection');
-
+const connection = require('./db/connection');
 // const mysql = require("mysql");
 
 // Function to start the application and present options
@@ -109,34 +108,71 @@ function addDepartment() {
     });
 }
 
-// function to add a role to the database
-async function addRole() {
-  const name = prompt('Enter the name of the new role:');
-  const salary = prompt('Enter the salary for the new role:');
-  const department_id = prompt('Enter the department ID for the new role:');
-  
-  const [rows, fields] = await pool.execute(
-    'INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)',
-    [name, salary, department_id]
-  );
-  
-  console.log(`New role ${name} added to the database.`);
+// Function to add a role to the database
+function addRole() {
+  inquirer
+    .prompt([
+      {
+        name: "name",
+        type: "input",
+        message: "Enter the name of the new role:"
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "Enter the salary for the new role:"
+      },
+      {
+        name: "department_id",
+        type: "input",
+        message: "Enter the department ID for the new role:"
+      }
+    ])
+    .then(function(answer) {
+      const query = "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)";
+      connection.query(query, [answer.name, answer.salary, answer.department_id], function(err, res) {
+        if (err) throw err;
+        console.log(`New role ${answer.name} added to the database.`);
+        start();
+      });
+    });
 }
 
-// function to add an employee to the database
-async function addEmployee() {
-  const first_name = prompt('Enter the employee\'s first name:');
-  const last_name = prompt('Enter the employee\'s last name:');
-  const role_id = prompt('Enter the employee\'s role ID:');
-  const manager_id = prompt('Enter the employee\'s manager ID:');
-  
-  const [rows, fields] = await pool.execute(
-    'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
-    [first_name, last_name, role_id, manager_id]
-  );
-  
-  console.log(`New employee ${first_name} ${last_name} added to the database.`);
+// Function to add an employee to the database
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "first_name",
+        type: "input",
+        message: "Enter the employee's first name:"
+      },
+      {
+        name: "last_name",
+        type: "input",
+        message: "Enter the employee's last name:"
+      },
+      {
+        name: "role_id",
+        type: "input",
+        message: "Enter the employee's role ID:"
+      },
+      {
+        name: "manager_id",
+        type: "input",
+        message: "Enter the employee's manager ID:"
+      }
+    ])
+    .then(function(answer) {
+      const query = "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)";
+      connection.query(query, [answer.first_name, answer.last_name, answer.role_id, answer.manager_id], function(err, res) {
+        if (err) throw err;
+        console.log(`New employee ${answer.first_name} ${answer.last_name} added to the database.`);
+        start();
+      });
+    });
 }
+
 
 // function to update an employee's role in the database
 async function updateEmployeeRole() {
