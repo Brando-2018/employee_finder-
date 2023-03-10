@@ -71,7 +71,7 @@ function viewDepartments() {
 // Function to view all roles
 function viewRoles() {
   const query =
-    "SELECT roles.id, roles.title, department.name AS department, roles.salary FROM roles JOIN department ON roles.department_id = department.id";
+    "SELECT role.id, role.title, department.name AS department, role.salary FROM role JOIN department ON role.department_id = department.id";
   connection.query(query, function(err, res) {
     if (err) throw err;
     console.table(res);
@@ -129,7 +129,7 @@ function addRole() {
       }
     ])
     .then(function(answer) {
-      const query = "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)";
+      const query = "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)";
       connection.query(query, [answer.name, answer.salary, answer.department_id], function(err, res) {
         if (err) throw err;
         console.log(`New role ${answer.name} added to the database.`);
