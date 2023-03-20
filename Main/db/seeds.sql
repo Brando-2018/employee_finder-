@@ -5,6 +5,7 @@ VALUES
 (3, "Legal"),
 (4, "Finance");
 
+
 INSERT INTO role (id, title, salary, department_id)
 VALUES
 (1, "Sales Manager", 120000, 1),

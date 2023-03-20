@@ -82,7 +82,7 @@ function viewRoles() {
 // Function to view all employees
 function viewEmployees() {
   const query =
-    "SELECT employee.id, employee.first_name, employee.last_name, roles.title AS job_title, department.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id";
+  "SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id";
   connection.query(query, function(err, res) {
     if (err) throw err;
     console.table(res);
@@ -174,19 +174,30 @@ function addEmployee() {
 }
 
 
-// function to update an employee's role in the database
-async function updateEmployeeRole() {
-  const [employees] = await pool.query('SELECT * FROM employee');
-  const employee = prompt('Select an employee to update:\n' + employees.map(e => `${e.id}: ${e.first_name} ${e.last_name}`).join('\n'));
-  
-  const new_role_id = prompt('Enter the new role ID:');
-  
-  const [rows, fields] = await pool.execute(
-    'UPDATE employee SET role_id = ? WHERE id = ?',
-    [new_role_id, employee]
-  );
-  
-  console.log(`Employee ${employee} updated with new role ID ${new_role_id}.`);
+
+function updateEmployeeRole() {
+  // Prompt the user to enter the employee's first name and new role ID
+  inquirer.prompt([
+    {
+      name: 'first_name',
+      type: 'input',
+      message: "Enter the employee's first name:"
+    },
+    {
+      name: 'role_id',
+      type: 'input',
+      message: 'Enter the new role ID:'
+    }
+  ]).then(answers => {
+    // Update the employee's role in the database
+    const sql = 'UPDATE employee SET role_id = ? WHERE first_name = ?';
+    const values = [answers.role_id, answers.first_name];
+    connection.query(sql, values, (error, result) => {
+      if (error) throw error;
+      console.log(`${result.affectedRows} employee(s) updated`);
+    });
+  });
 }
+
 
 start()
