@@ -18,8 +18,11 @@ function start() {
         "Add a role",
         "Add an employee",
         "Update an employee role",
+        "Delete a department",
+        "Delete a role",
+        "Delete an employee",
         "Exit"
-      ]
+      ]      
     })
     .then(function(answer) {
       switch (answer.action) {
@@ -51,6 +54,18 @@ function start() {
           updateEmployeeRole();
           break;
 
+        case "Delete a department":
+          deleteDepartment();
+          break;
+          
+        case "Delete a role":
+          deleteRole();
+          break;
+          
+        case "Delete an employee":
+          deleteEmployee();
+          break;
+          
         case "Exit":
           connection.end();
           break;
@@ -174,7 +189,6 @@ function addEmployee() {
 }
 
 
-
 function updateEmployeeRole() {
   // Prompt the user to enter the employee's first name and new role ID
   inquirer.prompt([
@@ -192,12 +206,66 @@ function updateEmployeeRole() {
     // Update the employee's role in the database
     const sql = 'UPDATE employee SET role_id = ? WHERE first_name = ?';
     const values = [answers.role_id, answers.first_name];
-    connection.query(sql, values, (error, result) => {
-      if (error) throw error;
-      console.log(`${result.affectedRows} employee(s) updated`);
+    try {
+      const test = connection.query(sql, values);
+
+      console.log(`Employee ${answers.role_id} updated their role.`);
+      start();
+    } catch (error) {
+      console.error(error)
+    }
+  });
+}
+
+
+// Function to delete a department
+function deleteDepartment() {
+  inquirer.prompt({
+    name: "id",
+    type: "input",
+    message: "Enter the ID of the department you want to delete:"
+  }).then(function(answer) {
+    const query = "DELETE FROM department WHERE id = ?";
+    connection.query(query, [answer.id], function(err, res) {
+      if (err) throw err;
+      console.log(`Department with ID ${answer.id} deleted from the database.`);
+      start();
     });
   });
 }
+
+// Function to delete a role
+function deleteRole() {
+  inquirer.prompt({
+    name: "id",
+    type: "input",
+    message: "Enter the ID of the role you want to delete:"
+  }).then(function(answer) {
+    const query = "DELETE FROM role WHERE id = ?";
+    connection.query(query, [answer.id], function(err, res) {
+      if (err) throw err;
+      console.log(`Role with ID ${answer.id} deleted from the database.`);
+      start();
+    });
+  });
+}
+
+// Function to delete an employee
+function deleteEmployee() {
+  inquirer.prompt({
+    name: "id",
+    type: "input",
+    message: "Enter the ID of the employee you want to delete:"
+  }).then(function(answer) {
+    const query = "DELETE FROM employee WHERE id = ?";
+    connection.query(query, [answer.id], function(err, res) {
+      if (err) throw err;
+      console.log(`Employee with ID ${answer.id} deleted from the database.`);
+      start();
+    });
+  });
+}
+
 
 
 start()
